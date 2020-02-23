@@ -1,7 +1,7 @@
 {
-  "name": "jscodeshift-transforms-skeleton",
+  "name": "flow-codemorphs",
   "version": "0.0.0-development",
-  "description": "skeleton for a jscodeshift transforms package",
+  "description": "general purpose codemods for flow",
   "sideEffects": false,
   "scripts": {
     "lint": "eslint $npm_package_config_lint",
@@ -69,18 +69,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/codemodsquad/jscodeshift-transforms-skeleton.git"
+    "url": "https://github.com/codemodsquad/flow-codemorphs.git"
   },
   "keywords": [
-    "jscodeshift",
-    "codemods"
+    "flow",
+    "codemods",
+    "jscodeshift"
   ],
   "author": "Andy Edwards",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/codemodsquad/jscodeshift-transforms-skeleton/issues"
+    "url": "https://github.com/codemodsquad/flow-codemorphs/issues"
   },
-  "homepage": "https://github.com/codemodsquad/jscodeshift-transforms-skeleton#readme",
+  "homepage": "https://github.com/codemodsquad/flow-codemorphs#readme",
   "devDependencies": {
     "@babel/cli": "^7.1.5",
     "@babel/core": "^7.1.6",
