@@ -27,7 +27,9 @@ Converts object shape types to exact objects.
 `ambiguousOnly` - if truthy, only ambiguous object shape types will be converted.
 
 You can pass `selectionStart` and `selectionEnd` options to only convert types within that
-range.
+range. If `selectionStart === selectionEnd`, only converts the type annotation containing
+the cursor, unless no type annotation contains the cursor, in which case it converts
+everything.
 
 ## Example
 
@@ -83,7 +85,9 @@ Converts object shape types to inexact objects.
 `ambiguousOnly` - if truthy, only ambiguous object shape types will be converted.
 
 You can pass `selectionStart` and `selectionEnd` options to only convert types within that
-range.
+range. If `selectionStart === selectionEnd`, only converts the type annotation containing
+the cursor, unless no type annotation contains the cursor, in which case it converts
+everything.
 
 ## Example
 
@@ -139,7 +143,9 @@ Converts mutable object shape and array types to readonly types.
 ## Options
 
 You can pass `selectionStart` and `selectionEnd` options to only convert types within that
-range.
+range. If `selectionStart === selectionEnd`, only converts the type annotation containing
+the cursor, unless no type annotation contains the cursor, in which case it converts
+everything.
 
 ## Example
 

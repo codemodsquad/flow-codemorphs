@@ -6,6 +6,7 @@ import {
   Options,
   ObjectTypeAnnotation,
 } from 'jscodeshift'
+import hasAncestor from './util/hasAncestor'
 
 type Filter = (
   path: ASTPath<Node>,
@@ -24,28 +25,40 @@ module.exports = function makeExact(
 
   const ambiguousOnly = Boolean(options.ambiguousOnly)
 
-  let filter: Filter
-  if (options.selectionStart) {
-    const selectionStart = parseInt(options.selectionStart)
-    const selectionEnd = options.selectionEnd
-      ? parseInt(options.selectionEnd)
-      : selectionStart
-    filter = ({ node }: ASTPath<any>): boolean =>
-      node.start >= selectionStart && node.end <= selectionEnd
-  } else {
-    filter = (): boolean => true
+  const selectionStart = parseInt(options.selectionStart)
+  const selectionEnd = options.selectionEnd
+    ? parseInt(options.selectionEnd)
+    : selectionStart
+
+  let target = root.find(j.ObjectTypeAnnotation)
+
+  if (selectionStart < selectionEnd) {
+    target = target.filter(
+      ({ node }: ASTPath<any>): boolean =>
+        node.start >= selectionStart && node.end <= selectionEnd
+    )
+  } else if (selectionStart === selectionEnd) {
+    const containing = new Set(
+      root
+        .find(j.FlowType)
+        .filter(
+          ({ node }: ASTPath<any>): boolean =>
+            node.start < selectionEnd && node.end >= selectionStart
+        )
+        .nodes()
+    )
+    target = target.filter(hasAncestor(path => containing.has(path.node)))
+
+    if (!target.size()) target = root.find(j.ObjectTypeAnnotation)
   }
 
-  root
-    .find(j.ObjectTypeAnnotation)
-    .filter(filter)
-    .forEach((path: ASTPath<ObjectTypeAnnotation>): void => {
-      const { node } = path
-      if (!node.inexact || !ambiguousOnly) {
-        node.exact = true
-        node.inexact = false
-      }
-    })
+  target.forEach((path: ASTPath<ObjectTypeAnnotation>): void => {
+    const { node } = path
+    if (!node.inexact || !ambiguousOnly) {
+      node.exact = true
+      node.inexact = false
+    }
+  })
 
   return root.toSource()
 }

@@ -9,6 +9,8 @@ import {
 } from 'jscodeshift'
 import { FlowTypeKind } from 'ast-types/gen/kinds'
 
+import hasAncestor from './util/hasAncestor'
+
 type Filter = (
   path: ASTPath<Node>,
   index: number,
@@ -25,13 +27,43 @@ module.exports = function makeReadOnly(
   const root = j(fileInfo.source)
 
   let filter: Filter
-  if (options.selectionStart) {
-    const selectionStart = parseInt(options.selectionStart)
-    const selectionEnd = options.selectionEnd
-      ? parseInt(options.selectionEnd)
-      : selectionStart
+
+  const selectionStart = parseInt(options.selectionStart)
+  const selectionEnd = options.selectionEnd
+    ? parseInt(options.selectionEnd)
+    : selectionStart
+
+  if (selectionStart < selectionEnd) {
     filter = ({ node }: ASTPath<any>): boolean =>
       node.start >= selectionStart && node.end <= selectionEnd
+  } else if (selectionStart === selectionEnd) {
+    const containing = new Set(
+      root
+        .find(j.FlowType)
+        .filter(
+          ({ node }: ASTPath<any>): boolean =>
+            node.start < selectionEnd && node.end >= selectionStart
+        )
+        .nodes()
+    )
+    filter = hasAncestor((path: ASTPath<any>) => containing.has(path.node))
+
+    if (
+      !root
+        .find(j.ObjectTypeAnnotation)
+        .filter(filter)
+        .size() &&
+      !root
+        .find(j.GenericTypeAnnotation, { id: { name: 'Array' } })
+        .filter(filter)
+        .size() &&
+      !root
+        .find(j.ArrayTypeAnnotation)
+        .filter(filter)
+        .size()
+    ) {
+      filter = (): boolean => true
+    }
   } else {
     filter = (): boolean => true
   }
