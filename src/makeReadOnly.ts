@@ -10,6 +10,7 @@ import {
 import { FlowTypeKind } from 'ast-types/gen/kinds'
 
 import hasAncestor from './util/hasAncestor'
+import isClassOrInterfaceBody from './util/isClassOrInterfaceBody'
 
 type Filter = (
   path: ASTPath<Node>,
@@ -71,6 +72,7 @@ module.exports = function makeReadOnly(
   root
     .find(j.ObjectTypeAnnotation)
     .filter(filter)
+    .filter(path => !isClassOrInterfaceBody(path))
     .replaceWith(
       (path: ASTPath<any>): FlowTypeKind => {
         const { node } = path

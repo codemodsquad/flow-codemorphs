@@ -6,6 +6,7 @@ import {
   ObjectTypeAnnotation,
 } from 'jscodeshift'
 import hasAncestor from './util/hasAncestor'
+import isClassOrInterfaceBody from './util/isClassOrInterfaceBody'
 
 module.exports = function makeInexact(
   fileInfo: FileInfo,
@@ -46,6 +47,7 @@ module.exports = function makeInexact(
   }
 
   target.forEach((path: ASTPath<ObjectTypeAnnotation>): void => {
+    if (isClassOrInterfaceBody(path)) return
     const { node } = path
     if (!node.exact || !ambiguousOnly) {
       node.inexact = true

@@ -7,6 +7,7 @@ import {
   ObjectTypeAnnotation,
 } from 'jscodeshift'
 import hasAncestor from './util/hasAncestor'
+import isClassOrInterfaceBody from './util/isClassOrInterfaceBody'
 
 type Filter = (
   path: ASTPath<Node>,
@@ -53,6 +54,7 @@ module.exports = function makeExact(
   }
 
   target.forEach((path: ASTPath<ObjectTypeAnnotation>): void => {
+    if (isClassOrInterfaceBody(path)) return
     const { node } = path
     if (!node.inexact || !ambiguousOnly) {
       node.exact = true
